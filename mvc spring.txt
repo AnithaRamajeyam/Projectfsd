@@ -1,0 +1,339 @@
+MVC stands for Model, View and Controller. MVC separates application into three components - Model, View and Controller.
+Model Model represents shape of the data and business logic. It maintains the data of the application. Model objects retrieve and store model state in a database.
+Model is a data and business logic.
+View View is a user interface. View display data using model to the user and also enables them to modify the data.
+View is a User Interface.
+Controller Controller handles the user request. Typically, user interact with View, which in-turn raises appropriate URL request, this request will be handled by a controller. The controller renders the appropriate view with the model data as a response.
+Controller is a request handler.
+
+https://dzone.com/articles/spring-component-scan
+
+Spring Web MVC framework
+The Spring Web model-view-controller (MVC) framework is designed around a DispatcherServlet that dispatches requests to handlers, with configurable handler mappings, view resolution, locale and theme resolution as well as support for uploading files. The default handler is based on the @Controller and @RequestMapping annotations, offering a wide range of flexible handling methods. With the introduction of Spring 3.0, the @Controller mechanism also allows you to create RESTful Web sites and applications, through the @PathVariable annotation and other features.
+
+The @Controller annotation acts as a stereotype for the annotated class, indicating its role. The dispatcher scans such annotated classes for mapped methods and detects @RequestMapping annotations 
+
+ the @RequestMapping annotation to map URLs such as appointments onto an entire class or a particular handler method. Typically the class-level annotation maps a specific request path (or path pattern) onto a form controller, with additional method-level annotations narrowing the primary mapping for a specific HTTP method request method (GET, POST, etc.) or an HTTP request parameter condition.
+
+
+@RestController indicates that the data returned by each method will be written straight into the response body instead of rendering a template
+
+httplocalhost8080
+
+The @PathVariable annotation on a method argument to bind it to the value of a URI template variable
+
+@Controller
+@RequestMapping(owners{ownerId})
+public class RelativePathUriTemplateController {
+
+  @RequestMapping(pets{petId})
+  public void findPet(@PathVariable String ownerId, @PathVariable String petId, Model model) {
+     implementation omitted
+  }
+}
+
+
+
+
+
+The @RequestParam annotation to bind request parameters to a method parameter in your controller
+httplocalhost8080petspetId=1001&petName=toffee
+Controller
+@RequestMapping(pets)
+public class EditPetForm {
+
+     ...
+
+    @RequestMapping(method = RequestMethod.GET)
+    public String setupForm(@RequestParam(petId) int petId,@RequestParam(petName”) String petName,  ModelMap model) {
+        Pet pet = this.clinic.loadPet(petId);
+        model.addAttribute(pet, pet);
+        return petForm;
+    }
+
+
+
+
+The @RequestBody method parameter annotation indicates that a method parameter should be bound to the value of the HTTP request body. For example
+@RequestMapping(value = something, method = RequestMethod.PUT)
+public void handle(@RequestBody String body, Writer writer) throws IOException {
+  writer.write(body);
+}
+
+
+The @ResponseBody annotation is similar to @RequestBody. This annotation can be put on a method and indicates that the return type should be written straight to the HTTP response body (and not placed in a Model, or interpreted as a view name). For example
+@RequestMapping(value = something, method = RequestMethod.PUT)
+@ResponseBody
+public String helloWorld()  {
+  return Hello World;
+}
+
+
+
+
+@ModelAttribute on a method
+The @ModelAttribute annotation can be used on methods or on method arguments. This section explains its usage on methods while the next section explains its usage on method arguments.
+An @ModelAttribute on a method indicates the purpose of that method is to add one or more model attributes. Such methods support the same argument types as @RequestMapping methods but cannot be mapped directly to requests. Instead @ModelAttribute methods in a controller are invoked before @RequestMapping methods, within the same controller. A couple of examples
+ Add one attribute
+ The return value of the method is added to the model under the name account
+ You can customize the name via @ModelAttribute(myAccount)
+
+@ModelAttribute(“account”)
+public Account addAccount() {
+    return accountManager.findAccount(number);
+}
+
+ model.addObject(“account”, accountManager.findAccount(number))
+
+
+
+@ModelAttribute on a method argument
+As explained in the previous section @ModelAttribute can be used on methods or on method arguments. This section explains its usage on method arguments.
+An @ModelAttribute on a method argument indicates the argument should be retrieved from the model. If not present in the model, the argument should be instantiated first and then added to the model. Once present in the model, the argument's fields should be populated from all request parameters that have matching names. This is known as data binding in Spring MVC, a very useful mechanism that saves you from having to parse each form field individually.
+@RequestMapping(value=owners{ownerId}pets{petId}edit, method = RequestMethod.POST)
+public String processSubmit(@ModelAttribute Pet pet) {
+
+}
+
+
+result of data binding there may be errors such as missing required fields or type conversion errors. To check for such errors add a BindingResult argument immediately following the @ModelAttribute argument
+@PostMapping(value=owners{ownerId}pets{petId}edit)
+public String processSubmit(@ModelAttribute(pet) Pet pet, BindingResult result) {
+
+    if (result.hasErrors()) {
+        return petForm;
+    }
+
+     ...
+
+}
+
+
+We have routes for each operations (@GetMapping, @PostMapping, @PutMapping and @DeleteMapping, corresponding to HTTP GET, POST, PUT, and DELETE calls). (NOTE It’s useful to read each method and understand what they do.)
+
+
+Spring and Spring Boot
+
+Spring Boot is a Spring framework module which provides RAD (Rapid Application Development) feature to the Spring framework. It is highly dependent on the starter templates feature 
+
+
+
+
+What is starter template?
+Spring Boot starters are templates that contain a collection of all the relevant transitive dependenciesthat are needed to start a particular functionality. For example, If you want to create a Spring WebMVC application then in a traditional setup, you would have included all required dependencies yourself. It leaves the chances of version conflict which ultimately result in more runtime exceptions.
+
+<!-- Spring web brings all required dependencies to build web application. -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+
+Spring boot auto-configuration
+Autoconfiguration is enabled with @EnableAutoConfiguration annotation. Spring boot auto configuration scans the classpath, finds the libraries in the classpath and then attempt to guess the best configuration for them, and finally configure all such beans.
+Auto-configuration tries to be as intelligent as possible and will back-away as you define more of your own configuration.
+Auto-configuration is always applied after user-defined beans have been registered.
+
+ Embedded server
+Spring boot applications always include tomcat as embedded server dependency. It means you can run the Spring boot applications from the command prompt without needling complex server infrastructure.
+
+Bootstrap the application
+To run the application, we need to use @SpringBootApplication annotation. Behind the scenes, that’s equivalent to @Configuration, @EnableAutoConfiguration, and @ComponentScan together.
+It enables the scanning of config classes, files and load them into spring context. In below example, execution start with main() method. It start loading all the config files, configure them and bootstrap the application based on application properties in application.properties file in /resources folder.
+MyApplication.java
+@SpringBootApplication
+public class MyApplication
+{
+    public static void main(String[] args)
+    {
+        SpringApplication.run(Application.class, args);
+    }
+}
+
+application.properties
+### Server port #########
+server.port=8080
+  
+### Context root ########
+server.contextPath=/home
+
+
+JDBC
+ORM
+Hibernate —> JPA
+
+Configuration Object
+The Configuration object is the first Hibernate object you create in any Hibernate application. It is usually created only once during application initialization. It represents a configuration or properties file required by the Hibernate.
+The Configuration object provides two keys components -
+	•	Database Connection - This is handled through one or more configuration files supported by Hibernate. These files are hibernate.properties and hibernate.cfg.xml.?
+	•	Class Mapping Setup - This component creates the connection between the Java classes and database tables.?
+			SessionFactory sessions=new Configuration().configure(“hibernate.cfg.xml”).buildSessionFactory();
+
+SessionFactory Object. —> Database
+Configuration object is used to create a SessionFactory object which in turn configures Hibernate for the application using the supplied configuration file and allows for a Session object to be instantiated. The SessionFactory is a thread safe object and used by all the threads of an application.
+The SessionFactory is a heavyweight object; it is usually created during application start up and kept for later use. You would need one SessionFactory object per database using a separate configuration file. So, if you are using multiple databases, then you would have to create multiple SessionFactory objects.
+
+
+
+Session Object. —> connection
+A Session is used to get a physical connection with a database. The Session object is lightweight and designed to be instantiated each time an interaction is needed with the database. Persistent objects are saved and retrieved through a Session object.
+The session objects should not be kept open for a long time because they are not usually thread safe and they should be created and destroyed them as needed.
+Transaction Object
+A Transaction represents a unit of work with the database and most of the RDBMS supports transaction functionality. Transactions in Hibernate are handled by an underlying transaction manager and transaction (from JDBC or JTA).
+This is an optional object and Hibernate applications may choose not to use this interface, instead managing transactions in their own application code.
+Query Object
+Query objects use SQL or Hibernate Query Language (HQL) string to retrieve data from the database and create objects. A Query instance is used to bind query parameters, limit the number of results returned by the query, and finally to execute the query.
+
+Association Mappings
+The mapping of associations between entity classes and the relationships between tables is the soul of ORM. Following are the four ways in which the cardinality of the relationship between the objects can be expressed. An association mapping can be unidirectional as well as bidirectional.
+Sr.No.
+Mapping type & Description
+1
+Many-to-One
+Mapping many-to-one relationship using Hibernate
+2
+One-to-One
+Mapping one-to-one relationship using Hibernate
+3
+One-to-Many
+Mapping one-to-many relationship using Hibernate
+4
+Many-to-Many
+Mapping many-to-many relationship using Hibernate
+
+
+@Entity Annotation
+The EJB 3 standard annotations are contained in the javax.persistence package, so we import this package as the first step. Second, we used the @Entity annotation to the Employee class, which marks this class as an entity bean, so it must have a no-argument constructor that is visible with at least protected scope.
+@Table Annotation
+The @Table annotation allows you to specify the details of the table that will be used to persist the entity in the database.
+The @Table annotation provides four attributes, allowing you to override the name of the table, its catalogue, and its schema, and enforce unique constraints on columns in the table. For now, we are using just table name, which is EMPLOYEE.
+@Id and @GeneratedValue Annotations
+Each entity bean will have a primary key, which you annotate on the class with the @Id annotation. The primary key can be a single field or a combination of multiple fields depending on your table structure.
+By default, the @Id annotation will automatically determine the most appropriate primary key generation strategy to be used but you can override this by applying the @GeneratedValueannotation, which takes two parameters strategy and generator that I'm not going to discuss here, so let us use only the default key generation strategy. Letting Hibernate determine which generator type to use makes your code portable between different databases.
+@Column Annotation
+The @Column annotation is used to specify the details of the column to which a field or property will be mapped. You can use column annotation with the following most commonly used attributes -
+	•	name attribute permits the name of the column to be explicitly specified.?
+	•	length attribute permits the size of the column used to map a value particularly for a String value.?
+	•	nullable attribute permits the column to be marked NOT NULL when the schema is generated.?
+	•	unique attribute permits the column to be marked as containing only unique values.?
+Hibernate Query Language (HQL) 
+
+Hibernate Query Language (HQL) is an object-oriented query language, similar to SQL, but instead of operating on tables and columns, HQL works with persistent objects and their properties. HQL queries are translated by Hibernate into conventional SQL queries, which in turns perform action on database.
+
+
+
+
+JPA handles most of the complexity of JDBC-based database access and object-relational mappings. On top of that, Spring Data JPA reduces the amount of boilerplate code required by JPA. That makes the implementation of your persistence layer easier and faster.
+
+
+Spring Data is a high level SpringSource project whose purpose is to unify and ease the access to different kinds of persistence stores, both relational database systems and NoSQL data stores
+
+JPA is a specification that defines an API for object-relational mappings and for managing persistent objects. 
+
+Hibernate and EclipseLink are 2 popular implementations of this specification. 
+
+Spring Data 
+
+Spring Data JPA adds a layer on top of JPA. That means it uses all features defined by the JPA specification, especially the entity and association mappings, the entity lifecycle management, and JPA’s query capabilities. On top of that, Spring Data JPA adds its own features like a no-code implementation of the repository pattern and the creation of database queries from method names.
+
+
+1. No-code Repositories
+The repository pattern is one of the most popular persistence-related patterns. It hides the data store specific implementation details and enables you to implement your business code on a higher abstraction level.
+2. Reduced boilerplate code
+To make it even easier, Spring Data JPA provides a default implementation for each method defined by one of its repository interfaces. That means that you no longer need to implement basic read or write operations
+
+
+
+3. Generated queries
+Another comfortable feature of Spring Data JPA is the generation of database queries based on method names. As long as your query isn’t too complex, you just need to define a method on your repository interface with a name that starts with find…By. Spring then parses the method name and creates a query for it.
+
+
+
+
+
+
+Company name. 11000
+Hibernate Query Language (HQL) 
+
+
+
+
+Hibernate Query Language (HQL) is an object-oriented query language, similar to SQL, but instead of operating on tables and columns, HQL works with persistent objects and their properties. HQL queries are translated by Hibernate into conventional SQL queries, which in turns perform action on database.
+FROM Clause
+You will use FROM clause if you want to load a complete persistent objects into memory. Following is the simple syntax of using FROM clause -
+String hql = "FROM Employee";
+Query query = session.createQuery(hql);
+List results = query.list();
+I
+
+
+f you need to fully qualify a class name in HQL, just specify the package and class name as follows -
+String hql = "FROM com.hibernatebook.criteria.Employee";
+Query query = session.createQuery(hql);
+List results = query.list();
+
+
+String hql = "FROM Employee AS E";
+Query query = session.createQuery(hql);
+List results = query.list();
+
+
+String hql = "FROM Employee E";
+Query query = session.createQuery(hql);
+List results = query.list();
+SELECT Clause
+The SELECT clause provides more control over the result set then the from clause. If you want to obtain few properties of objects instead of the complete object, use the SELECT clause. Following is the simple syntax of using SELECT clause to get just first_name field of the Employee object -
+
+
+String hql = "SELECT E.firstName FROM Employee E";
+Query query = session.createQuery(hql);
+List results = query.list();
+
+
+MAVEN:
+
+
+Maven is a build automation tool used primarily for Java projects.
+Maven addresses two aspects of building software: first, it describes how software is built, and second, it describes its dependencies. 
+
+Maven dynamically downloads Java libraries and Maven plug-ins from one or more repositories such as the Maven 2 Central Repository, and stores them in a local cache
+
+
+Maven is built using a plugin-based architecture that allows it to make use of any application controllable through standard input
+
+
+Directory name
+Purpose
+project home
+Contains the pom.xml and all subdirectories.
+src/main/java
+Contains the deliverable Java sourcecode for the project.
+src/main/resources
+Contains the deliverable resources for the project, such as property files.
+src/test/java
+Contains the testing Java sourcecode (JUnit or TestNG test cases, for example) for the project.
+src/test/resources
+Contains resources necessary for testing.
+
+Project Object Model
+A Project Object Model (POM) provides all the configuration for a single project. General configuration covers the project's name, its owner and its dependencies on other projects. One can also configure individual phases of the build process, which are implemented as plugins. 
+
+Plugins[
+Most of Maven's functionality is in plugins. A plugin provides a set of goals that can be executed using the following syntax:
+ mvn [plugin-name]:[goal-name]
+For example, a Java project can be compiled with the compiler-plugin's compile-goal[10] by running mvn compiler:compile.
+
+Build lifecycles	[edit]
+Build lifecycle is a list of named phases that can be used to give order to goal execution. One of Maven's standard lifecycles is the default lifecycle, which includes the following phases, in this order:[13]
+ 1  validate
+ 2 generate-sources
+ 3 process-sources
+ 4 generate-resources
+ 5  process-resources
+ 6 compile
+ 7 process-test-sources
+ 8 process-test-resources
+ 9 test-compile
+10 test
+11 package
+12 install
+13 deploy

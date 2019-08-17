@@ -1,0 +1,21 @@
+create table sectors(sector_id int(11) auto_increment primary key,sector_name varchar(20) DEFAULT NULL,brief varchar(50) DEFAULT NULL); 
+
+
+
+create table company(company_code int(11) auto_increment primary key,company_name varchar(20) DEFAULT NULL,turnover decimal(10) DEFAULT NULL,ceo varchar(20) DEFAULT NULL,board_of_directors varchar(20) DEFAULT NULL,sector_id int(10) DEFAULT NULL,brief_writeup varchar(200) DEFAULT NULL,stock_code int DEFAULT NULL,FOREIGN KEY (sector_id) REFERENCES sectors(sector_id));
+
+
+
+create table stockexchange(stockexchange_id int(11) primary key,stockexchange_name varchar(20),brief varchar(200),contact_address varchar(50),remarks varchar(100));
+
+
+create table stockpricedetails(stock_code int(11) primary key,company_code int(11),stockexchange_id int(20),current_price decimal(5),date date,time date,foreign key (company_code) references company(company_code),foreign key (stockexchange_id) references company(stockexchange_id));
+ 
+
+create table IPO_planned(id int primary key,company_code int(10),stock_exchange int(20),price_per_share decimal(10,0),total_number_of_shares int(20),open_date_time date,remarks varchar(100),foreign key (company_code) references company(company_code),
+ foreign key (stock_exchange) references stockexchange(stockexchange_id));
+
+create table user(id int(11) auto_increment primary key,username varchar(30),password varchar(20),usertype varchar(20),email varchar(30),mobile_number int(10),confirmed tinyint(4));
+
+
+ALTER TABLE stockexchange DROP breief;
